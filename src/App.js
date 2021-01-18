@@ -89,8 +89,8 @@ function UserPage(){
     <table>
       <thead>
         <tr>
-          <th style={{backgroundColor: "#0275d8", color: "white"}}>FirstName</th>
-          <th style={{backgroundColor: "#0275d8", color: "white"}}>LastName</th>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Username</th>
+     
         </tr>
       </thead>
       <tbody>{mapUsers(fetchedData)}</tbody>
@@ -103,13 +103,14 @@ function UserPage(){
   function mapUsers(fetchedData) {
     let returned = fetchedData.map((data) => {
       return (
-        <tr key={data.firstName}>
+        <tr key={data.userName}>
           
-          <Popup trigger={<td> {data.firstName} </td>} >
-          Race: {data.lastName} <br/>
-          Navn: {data.birthyear}
-          <img src={"https://images.dog.ceo/breeds/affenpinscher/n02110627_11759.jpg"}  style={{width:"100%"}} />
-          
+          <Popup trigger={<td> {data.userName} </td>} >
+          Name: {data.userInfo.name} <br/>
+          Age: {data.userInfo.age} <br/>
+          Weight: {data.userInfo.weight}
+
+       
           </Popup>
        
         </tr>

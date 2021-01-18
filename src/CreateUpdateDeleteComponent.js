@@ -183,7 +183,7 @@ export default function CRD(props){
 
 
     return (
-        <div><h2   >Her kan du lave en bruger, tryk på knappen og begynd</h2>
+        <div><h2>Her kan du lave en bruger, tryk på knappen og begynd</h2>
         <div class="d-flex justify-content-left">
         
             <div className="btn-group " role="group" aria-label="Basic example">

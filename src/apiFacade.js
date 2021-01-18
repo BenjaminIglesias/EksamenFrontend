@@ -34,13 +34,10 @@ function apiFacade() {
   
   const fetchPersonData = () => {
     const options = makeOptions("GET", true); //True add's the token
-    return fetch(URL + "/api/Person/getAll",options).then(handleHttpErrors);
+    return fetch(URL + "/api/User/getAll",options).then(handleHttpErrors);
   };
 
-  const createUser = (person) => {
-    const options = makeOptions("Post", true); //True add's the token
-    return fetch(URL + "/api/Person/add",options).then(handleHttpErrors);
-  };
+ 
 
   function addUser(user){
     const options = makeOptions("POST", false, user)
