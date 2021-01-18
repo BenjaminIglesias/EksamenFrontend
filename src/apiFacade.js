@@ -37,6 +37,16 @@ function apiFacade() {
     return fetch(URL + "/api/User/getAll",options).then(handleHttpErrors);
   };
 
+  const fetchActivityData = (name) => {
+    const options = makeOptions("GET", true); //True add's the token
+    return fetch(URL + "/api/Activity/getAll/" + name,options).then(handleHttpErrors);
+  };
+
+
+  function addActivity(activity, location, userName){
+    const options = makeOptions("POST", true, activity)
+    return fetch(URL + "/api/Activity/add" +"/" + location + "/" +userName ,options).then(handleHttpErrors);
+}
  
 
   function addUser(user){
@@ -83,7 +93,9 @@ function apiFacade() {
     fetchData,
     fetchStarWarsData,
     fetchPersonData,
-    addUser
+    addUser,
+    addActivity,
+    fetchActivityData
   };
 }
 const facade = apiFacade();

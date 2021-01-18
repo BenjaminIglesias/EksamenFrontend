@@ -4,6 +4,7 @@ import Popup from 'reactjs-popup';
 import facade from "./apiFacade";
 import StarWars from "./starWars";
 import CRDComponent from "./CreateUpdateDeleteComponent";
+import CreateActivityComponent from "./CreateActivityComponent";
 import WelcomePage from "./welcomePage";
 import { Switch, Route, NavLink } from "react-router-dom";
 import Form from "react-bootstrap/Form";
@@ -12,6 +13,7 @@ import 'reactjs-popup/dist/index.css';
 
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { hydrate } from "react-dom";
 
 
 function Header({loggedIn}) {
@@ -39,6 +41,20 @@ function Header({loggedIn}) {
            Opret Bruger
           </NavLink>
         </li>)}
+        {loggedIn && (
+          <li>
+          <NavLink activeClassName="selected" to="/ActivityList">
+           Mine Aktiviteter
+          </NavLink>
+        </li>
+        )}
+        {loggedIn && (
+          <li>
+          <NavLink activeClassName="selected" to="/ActivityPage">
+           Lav ny aktivitet 
+          </NavLink>
+        </li>
+        )}
         {loggedIn && (
           <li>
           <NavLink activeClassName="selected" to="/StarwarsPage">
@@ -123,7 +139,74 @@ function UserPage(){
 
 
 
+function ActivityList(){
 
+  const [fetchedData,setfetchedData] = useState([]);
+  useEffect(() => {
+    facade.fetchActivityData(parseJwt(facade.getToken()).sub).then((data) => setfetchedData(data));
+  }, []);
+
+
+  return (
+  <div> 
+     <div>
+  <h3>Click for more info</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Aktivitet</th>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Tid</th>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Distance</th>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Kommentar</th>
+     
+        </tr>
+      </thead>
+      <tbody>{mapUsers(fetchedData)}</tbody>
+    </table>
+  </div>
+ 
+  </div>
+
+  )
+  function mapUsers(fetchedData) {
+    let returned = fetchedData.map((data) => {
+      return (
+        <Popup trigger={
+        <tr key={data.userName}>
+          
+         <td> {data.exerciseType} </td>  <td> {data.duration} </td>  <td> {data.distance} </td> <td> {data.exerciseType} </td>
+        
+         
+        </tr>
+        }>
+            <h4>Sted</h4>
+          By: {data.cityInfo.name} <br/>
+          Koordinater: {data.cityInfo.geocoordinates} <br/>
+          Kommune: {data.cityInfo.municipality}  <br></br>        
+          Befolkning: {data.cityInfo.population} personer<br></br>
+          <br></br>
+          <h4>Vejr</h4>
+          Temperatur: {data.weatherInfo.temperature} grader celcius <br/>
+          Vejrtekst: {data.weatherInfo.skyText} <br/>
+          Luftfugtighed: {data.weatherInfo.humidity}%<br></br>  
+          Vind: {data.weatherInfo.windText}<br></br>
+
+   
+       
+        </Popup>
+       
+    );
+    });
+    return returned;
+  }
+}
+
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }}
 
 
 
@@ -237,6 +320,18 @@ return (
 
 )
 }
+
+
+function ActivityPage(){
+  const [fetchedDataError, setFetchedDataError] = useState("");
+
+if(fetchedDataError){
+  return <h3>{fetchedDataError.message}</h3>
+}
+  return (<CreateActivityComponent error={fetchedDataError} setError={setFetchedDataError}/>)
+}
+
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -256,6 +351,12 @@ function App() {
        
         <Route exact path="/StarWarsPage">
           <StarWarsPage />
+        </Route>
+        <Route exact path="/ActivityList">
+          <ActivityList/>
+        </Route>
+        <Route exact path="/ActivityPage">
+          <ActivityPage />
         </Route>
         <Route exact path="/CRUDPage">
           <CRUDPage />
