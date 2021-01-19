@@ -24,14 +24,11 @@ function apiFacade() {
     return fetch(URL + "/api/info/" + role, options).then(handleHttpErrors);
   };
 
-  const fetchStarWarsData = () => {
-    const options = makeOptions  ("GET", true); //True add's the token
-  
-    return fetch(URL + "/api/info/filmsparallel",options).then(handleHttpErrors);
-    
+  const editActivityData = (id, activity) => {
+    const options = makeOptions("PUT", true, activity); //True add's the token
+    return fetch(URL + "/api/Activity/update/" + id,options).then(handleHttpErrors);
   };
 
-  
   const fetchPersonData = () => {
     const options = makeOptions("GET", true); //True add's the token
     return fetch(URL + "/api/User/getAll",options).then(handleHttpErrors);
@@ -91,11 +88,11 @@ function apiFacade() {
     login,
     logout,
     fetchData,
-    fetchStarWarsData,
     fetchPersonData,
     addUser,
     addActivity,
-    fetchActivityData
+    fetchActivityData,
+    editActivityData
   };
 }
 const facade = apiFacade();

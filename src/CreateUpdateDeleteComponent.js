@@ -67,7 +67,7 @@ export default function CRD(props){
               <Form.Group size="lg" controlId="userPass">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
-                  type="lastName"
+                  type="password"
                   value={userPass}
                   onChange={(e) => setUserPass(e.target.value)}
                 />

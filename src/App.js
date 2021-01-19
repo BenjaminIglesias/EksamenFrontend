@@ -2,39 +2,40 @@ import React, { useState, useEffect} from "react";
 import Popup from 'reactjs-popup';
 
 import facade from "./apiFacade";
-import StarWars from "./starWars";
 import CRDComponent from "./CreateUpdateDeleteComponent";
 import CreateActivityComponent from "./CreateActivityComponent";
+import CreateActivityEditComponent from "./CreateActivityEditComponent";
 import WelcomePage from "./welcomePage";
 import { Switch, Route, NavLink } from "react-router-dom";
-import Form from "react-bootstrap/Form";
+
 import Button from "react-bootstrap/Button";
 import 'reactjs-popup/dist/index.css';
-
-
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { hydrate } from "react-dom";
+
 
 
 function Header({loggedIn}) {
   return (
     <div>
       <ul className="header">
+      {!loggedIn && (
         <li>
           <NavLink exact activeClassName="selected" to="/">
             Home
           </NavLink>
         </li>
+      )}  
         <li>
           <NavLink activeClassName="selected" to="/LoginPage">
             Login Side
           </NavLink>
         </li>
+        {loggedIn && (
         <li>
           <NavLink exact activeClassName="selected" to="/UserPage">
            User Page
           </NavLink>
-        </li>
+        </li>)}
         {!loggedIn && (
         <li>
           <NavLink exact activeClassName="selected" to="/CRUDPage">
@@ -55,13 +56,7 @@ function Header({loggedIn}) {
           </NavLink>
         </li>
         )}
-        {loggedIn && (
-          <li>
-          <NavLink activeClassName="selected" to="/StarwarsPage">
-            Star Wars
-          </NavLink>
-        </li>
-        )}
+      
   
       </ul>
     </div>
@@ -70,25 +65,6 @@ function Header({loggedIn}) {
 
 
 
-
-
-function StarWarsPage() {
-  const emptyData = {
-    planetInfo: [{ name: "Loading..." }],
-    characterInfo: [{ name: "Loading..." }],
-  };
-  const [fetchedData, setfetchedData] = useState(emptyData);
-  const [fetchedDataError, setfetchedDataError] = useState("");
-
-  useEffect(() => {
-    facade.fetchStarWarsData().then((data) => setfetchedData(data)).catch(err => err.fullError).then(err => setfetchedDataError(err));
-  }, []);
-
-  if(fetchedDataError){
-  return <h3>{fetchedDataError.message}</h3>
-  }
-  return <StarWars fetchedData={fetchedData} />;
-}
 
 function UserPage(){
 
@@ -101,7 +77,7 @@ function UserPage(){
   return (
   <div> 
      <div>
-  <h3>Click for more info</h3>
+  <h3>Tryk for mere info</h3>
     <table>
       <thead>
         <tr>
@@ -122,9 +98,9 @@ function UserPage(){
         <tr key={data.userName}>
           
           <Popup trigger={<td> {data.userName} </td>} >
-          Name: {data.userInfo.name} <br/>
-          Age: {data.userInfo.age} <br/>
-          Weight: {data.userInfo.weight}
+          Navn: {data.userInfo.name} <br/>
+          Alder: {data.userInfo.age} År<br/>
+          Vægt: {data.userInfo.weight} kg
 
        
           </Popup>
@@ -145,12 +121,14 @@ function ActivityList(){
   useEffect(() => {
     facade.fetchActivityData(parseJwt(facade.getToken()).sub).then((data) => setfetchedData(data));
   }, []);
-
+  function useForceUpdate(){
+    const [value, setValue] = useState(0); 
+    return () => setValue(value => value + 1);}
 
   return (
   <div> 
      <div>
-  <h3>Click for more info</h3>
+  <h3>Tryk på en aktivitet og få mere at vide</h3>
     <table>
       <thead>
         <tr>
@@ -158,6 +136,8 @@ function ActivityList(){
           <th style={{backgroundColor: "#0275d8", color: "white"}}>Tid</th>
           <th style={{backgroundColor: "#0275d8", color: "white"}}>Distance</th>
           <th style={{backgroundColor: "#0275d8", color: "white"}}>Kommentar</th>
+          <th style={{backgroundColor: "#0275d8", color: "white"}}>Ændre</th>
+          
      
         </tr>
       </thead>
@@ -168,17 +148,30 @@ function ActivityList(){
   </div>
 
   )
+  
+
   function mapUsers(fetchedData) {
     let returned = fetchedData.map((data) => {
       return (
+      
         <Popup trigger={
-        <tr key={data.userName}>
-          
-         <td> {data.exerciseType} </td>  <td> {data.duration} </td>  <td> {data.distance} </td> <td> {data.exerciseType} </td>
-        
+          <tr key={data.userName}>
+  
+         <td> {data.exerciseType} </td>  
+         <td> {data.duration} min </td> 
+          <td> {data.distance} km </td>
+           <td> {data.comment} </td>
+           <Popup trigger={
+           <td><Button>Ændre</Button></td> 
+           } modal>
+             <CreateActivityEditComponent id={data.id} useForceUpdate={useForceUpdate}/>
+           </Popup>
+           </tr>
+  
+          }>
+       
          
-        </tr>
-        }>
+        
             <h4>Sted</h4>
           By: {data.cityInfo.name} <br/>
           Koordinater: {data.cityInfo.geocoordinates} <br/>
@@ -190,11 +183,10 @@ function ActivityList(){
           Vejrtekst: {data.weatherInfo.skyText} <br/>
           Luftfugtighed: {data.weatherInfo.humidity}%<br></br>  
           Vind: {data.weatherInfo.windText}<br></br>
-
-   
+            
        
         </Popup>
-       
+   
     );
     });
     return returned;
@@ -347,11 +339,7 @@ function App() {
         </Route>
         <Route exact path="/UserPage">
           <UserPage/>
-        </Route>
-       
-        <Route exact path="/StarWarsPage">
-          <StarWarsPage />
-        </Route>
+        </Route>      
         <Route exact path="/ActivityList">
           <ActivityList/>
         </Route>
